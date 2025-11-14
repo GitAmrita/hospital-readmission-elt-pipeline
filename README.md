@@ -1,2 +1,12 @@
-# hospital-readmission-elt-pipeline
-ELT pipeline for hospital readmission prediction using synthetic EHR data.
+# Hospital Readmission ELT Pipeline
+
+This project demonstrates an end-to-end **ELT pipeline** for predicting hospital readmissions using synthetic EHR data. It includes:
+
+- Batch CSV ingestion (file drop)
+- API-based ingestion
+- Streaming ingestion simulation
+- Transform layers (Bronze → Silver → Gold) for ML-ready features
+- Readmission prediction using machine learning models
+
+Datasource: https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008
+
