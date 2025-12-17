@@ -44,6 +44,35 @@ Start local API and ingestion
 - Batch ingestion via main.py. python main.py
     Fetches encounters once and exits (API runs temporarily)
 
+Stream ingestion via Kafka
+
+Prereqs
+- Docker Desktop/daemon running
+- Virtualenv activated: `source venv/bin/activate`
+
+Bring up Kafka + Zookeeper
+- `docker compose -f /Users/amy/Documents/Code/hospital-readmission-elt-pipeline/docker-compose.kafka.yml up -d`
+
+Create topic (idempotent)
+- `docker exec -it $(docker ps -qf "name=kafka") kafka-topics --bootstrap-server localhost:9092 --create --if-not-exists --topic encounters --partitions 1 --replication-factor 1`
+
+Run FastAPI for source data (optional, separate terminal)
+- `uvicorn fhir_api.fhir_api_endpoints:app --host 127.0.0.1 --port 8000 --reload`
+
+Run Kafka producer + consumer (same command)
+- `cd /Users/amy/Documents/Code/hospital-readmission-elt-pipeline`
+- `python run_kafka_ingestion.py`
+  - Starts consumer thread, then publishes encounters to topic `encounters`
+  - Inserts into `raw.all_encounters` with source="kafka" and ingestion_time set per row
+
+Inspect data (example)
+- `duckdb /Users/amy/Documents/Code/hospital-readmission-elt-pipeline/ehr.duckdb "SELECT COUNT(*) FROM raw.all_encounters WHERE source='kafka';"`
+
+Stop
+- Ctrl+C in the terminal running `run_kafka_ingestion.py`
+- `docker compose -f /Users/amy/Documents/Code/hospital-readmission-elt-pipeline/docker-compose.kafka.yml down`
+
+
 
 
 
